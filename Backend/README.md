@@ -79,3 +79,84 @@ The request failed due to validation errors (e.g., invalid email, password too s
   ]
 }
 ```
+
+## User Login Endpoint
+
+### Endpoint
+
+`POST /users/login`
+
+### Description
+
+This endpoint is used to authenticate an existing user. It verifies the email and password and returns an authentication token along with the user details.
+
+### Request Body
+
+The request body must be a JSON object containing the following fields:
+
+| Field      | Type   | Required | Description          | Validation Rules             |
+| ---------- | ------ | -------- | -------------------- | ---------------------------- |
+| `email`    | String | Yes      | User's email address | Must be a valid email format |
+| `password` | String | Yes      | User's password      | Minimum 6 characters         |
+
+**Example Request:**
+
+```json
+{
+  "email": "john@example.com",
+  "password": "securePassword123"
+}
+```
+
+### Responses
+
+#### 200 OK
+
+The user was successfully authenticated.
+
+**Example Response:**
+
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR...",
+  "user": {
+    "fullname": {
+      "firstname": "John",
+      "lastname": "Doe"
+    },
+    "email": "john@example.com",
+    "_id": "657a1b2c3d4e5f6g7h8i9j0k"
+  }
+}
+```
+
+#### 400 Bad Request
+
+The request failed due to validation errors (e.g., invalid email, password too short).
+
+**Example Response:**
+
+```json
+{
+  "errors": [
+    {
+      "value": "inv",
+      "msg": "Invalid Email",
+      "param": "email",
+      "location": "body"
+    }
+  ]
+}
+```
+
+#### 401 Unauthorized
+
+Invalid email or password.
+
+**Example Response:**
+
+```json
+{
+  "message": "Invalid email or password"
+}
+```
