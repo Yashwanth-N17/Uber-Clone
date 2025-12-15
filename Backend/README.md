@@ -160,3 +160,89 @@ Invalid email or password.
   "message": "Invalid email or password"
 }
 ```
+
+## User Profile Endpoint
+
+### Endpoint
+
+`GET /users/profile`
+
+### Description
+
+This endpoint retrieves the profile information of the authenticated user.
+
+### Authorization
+
+Requires a valid JWT token in the `Authorization` header (Bearer token) or as a cookie named `token`.
+
+### Responses
+
+#### 200 OK
+
+Returns the user's profile information.
+
+**Example Response:**
+
+```json
+{
+  "fullname": {
+    "firstname": "John",
+    "lastname": "Doe"
+  },
+  "email": "john@example.com",
+  "_id": "657a1b2c3d4e5f6g7h8i9j0k",
+  "__v": 0
+}
+```
+
+#### 401 Unauthorized
+
+Authentication failed (missing or invalid token).
+
+**Example Response:**
+
+```json
+{
+  "message": "Unauthorized"
+}
+```
+
+## User Logout Endpoint
+
+### Endpoint
+
+`GET /users/logout`
+
+### Description
+
+This endpoint logs out the current user by blacklisting the provided token and clearing the cookie.
+
+### Authorization
+
+Requires a valid JWT token in the `Authorization` header (Bearer token) or as a cookie named `token`.
+
+### Responses
+
+#### 200 OK
+
+User successfully logged out.
+
+**Example Response:**
+
+```json
+{
+  "message": "Logged Out"
+}
+```
+
+#### 401 Unauthorized
+
+Authentication failed (missing or invalid token).
+
+**Example Response:**
+
+```json
+{
+  "message": "Unauthorized"
+}
+```
