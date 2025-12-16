@@ -246,3 +246,87 @@ Authentication failed (missing or invalid token).
   "message": "Unauthorized"
 }
 ```
+
+## Captain Registration Endpoint
+
+### Endpoint
+
+`POST /captains/register`
+
+### Description
+
+This endpoint is used to register a new captain in the system. It creates a new captain record in the database and returns an authentication token along with the captain details.
+
+### Request Body
+
+The request body must be a JSON object containing the following fields:
+
+| Field                 | Type   | Required | Description                | Validation Rules                            |
+| --------------------- | ------ | -------- | -------------------------- | ------------------------------------------- |
+| `fullname.firstname`  | String | Yes      | Captain's first name       | Minimum 3 characters                        |
+| `fullname.lastname`   | String | Yes      | Captain's last name        | Minimum 3 characters                        |
+| `email`               | String | Yes      | Captain's email address    | Must be a valid email format                |
+| `password`            | String | Yes      | Captain's password         | Minimum 6 characters                        |
+| `vehicle.color`       | String | Yes      | Vehicle color              | Minimum 3 characters                        |
+| `vehicle.plate`       | String | Yes      | Vehicle plate number       | Minimum 3 characters                        |
+| `vehicle.capacity`    | Number | Yes      | Vehicle passenger capacity | Minimum 1                                   |
+| `vehicle.vehicleType` | String | Yes      | Type of vehicle            | Must be one of: 'car', 'motorcycle', 'auto' |
+
+**Example Request:**
+
+```json
+{
+  "fullname": {
+    "firstname": "Jane",
+    "lastname": "Doe"
+  },
+  "email": "jane.captain@example.com",
+  "password": "securePassword123",
+  "vehicle": {
+    "color": "Red",
+    "plate": "KA-01-AB-1234",
+    "capacity": 4,
+    "vehicleType": "car"
+  }
+}
+```
+
+### Responses
+
+#### 201 Created
+
+The captain was successfully registered.
+
+**Example Response:**
+
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR...",
+  "captain": {
+    "fullname": {
+      "firstname": "Jane",
+      "lastname": "Doe"
+    },
+    "email": "jane.captain@example.com",
+    "vehicle": {
+      "color": "Red",
+      "plate": "KA-01-AB-1234",
+      "capacity": 4,
+      "vehicleType": "car"
+    },
+    "_id": "657a1b2c3d4e5f6g7h8i9j0k"
+  }
+}
+```
+
+#### 400 Bad Request
+
+The request failed due to validation errors or if the captain already exists.
+
+**Example Response:**
+
+```json
+{
+    "message": "Captain already exist"
+}
+```
