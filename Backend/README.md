@@ -327,6 +327,167 @@ The request failed due to validation errors or if the captain already exists.
 
 ```json
 {
-    "message": "Captain already exist"
+  "message": "Captain already exist"
+}
+```
+
+## Captain Login Endpoint
+
+### Endpoint
+
+`POST /captains/login`
+
+### Description
+
+This endpoint is used to authenticate an existing captain. It verifies the email and password and returns an authentication token along with the captain details.
+
+### Request Body
+
+The request body must be a JSON object containing the following fields:
+
+| Field      | Type   | Required | Description             | Validation Rules             |
+| ---------- | ------ | -------- | ----------------------- | ---------------------------- |
+| `email`    | String | Yes      | Captain's email address | Must be a valid email format |
+| `password` | String | Yes      | Captain's password      | Minimum 6 characters         |
+
+**Example Request:**
+
+```json
+{
+  "email": "jane.captain@example.com",
+  "password": "securePassword123"
+}
+```
+
+### Responses
+
+#### 200 OK
+
+The captain was successfully authenticated.
+
+**Example Response:**
+
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR...",
+  "captain": {
+    "fullname": {
+      "firstname": "Jane",
+      "lastname": "Doe"
+    },
+    "email": "jane.captain@example.com",
+    "vehicle": {
+      "color": "Red",
+      "plate": "KA-01-AB-1234",
+      "capacity": 4,
+      "vehicleType": "car"
+    },
+    "_id": "657a1b2c3d4e5f6g7h8i9j0k"
+  }
+}
+```
+
+#### 400 Bad Request
+
+The request failed due to validation errors or invalid credentials.
+
+**Example Response:**
+
+```json
+{
+  "message": "Invalid email or password"
+}
+```
+
+## Captain Profile Endpoint
+
+### Endpoint
+
+`GET /captains/profile`
+
+### Description
+
+This endpoint retrieves the profile information of the authenticated captain.
+
+### Authorization
+
+Requires a valid JWT token in the `Authorization` header (Bearer token) or as a cookie named `token`.
+
+### Responses
+
+#### 200 OK
+
+Returns the captain's profile information.
+
+**Example Response:**
+
+```json
+{
+  "captain": {
+    "fullname": {
+      "firstname": "Jane",
+      "lastname": "Doe"
+    },
+    "email": "jane.captain@example.com",
+    "vehicle": {
+      "color": "Red",
+      "plate": "KA-01-AB-1234",
+      "capacity": 4,
+      "vehicleType": "car"
+    },
+    "_id": "657a1b2c3d4e5f6g7h8i9j0k"
+  }
+}
+```
+
+#### 401 Unauthorized
+
+Authentication failed (missing or invalid token).
+
+**Example Response:**
+
+```json
+{
+  "message": "Unauthorized"
+}
+```
+
+## Captain Logout Endpoint
+
+### Endpoint
+
+`GET /captains/logout`
+
+### Description
+
+This endpoint logs out the current captain by blacklisting the provided token and clearing the cookie.
+
+### Authorization
+
+Requires a valid JWT token in the `Authorization` header (Bearer token) or as a cookie named `token`.
+
+### Responses
+
+#### 200 OK
+
+Captain successfully logged out.
+
+**Example Response:**
+
+```json
+{
+  "message": "Logged out successfully"
+}
+```
+
+#### 401 Unauthorized
+
+Authentication failed (missing or invalid token).
+
+**Example Response:**
+
+```json
+{
+  "message": "Unauthorized"
 }
 ```
