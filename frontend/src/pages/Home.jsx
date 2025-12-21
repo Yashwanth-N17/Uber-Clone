@@ -7,6 +7,7 @@ import VehiclePanel from '../components/VehiclePanel';
 import ConfirmRide from '../components/ConfirmRide';
 import LookingForDriver from '../components/LookingForDriver';
 import WaitingForDriver from '../components/WaitingForDriver';
+import Riding from './Riding';
 
 const Home = () => {
     const [pickup, setPickup] = useState('')
@@ -163,6 +164,7 @@ const Home = () => {
             <div ref={waitingForDriverRef} className='fixed w-full z-10 bottom-0  bg-white px-3 py-6 pt-12'>
                 <WaitingForDriver  waitingForDriver={waitingForDriver} />
             </div>
+            
         </div>
     )
 }
