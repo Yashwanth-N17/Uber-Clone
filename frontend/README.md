@@ -14,3 +14,12 @@ The React Compiler is not enabled on this template because of its impact on dev 
 ## Expanding the ESLint configuration
 
 If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+
+## Get Fare Details
+
+The `get-fare` functionality is responsible for calculating the estimated cost of a trip based on the pickup and destination points.
+
+### Key Features
+- **Distance & Time Calculation**: Uses backend services to determine travel distance and duration.
+- **Vehicle Types**: Returns fare estimates for various vehicle options (e.g., Car, Auto, Moto).
+- **API Endpoint**: Typically interacts with a backend route (e.g., `/rides/get-fare` or `/maps/get-fare`) to fetch real-time pricing.
