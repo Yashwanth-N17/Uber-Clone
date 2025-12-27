@@ -1,5 +1,6 @@
 const axios = require("axios");
-
+const captainModel = require("../models/captain.model");
+ 
 module.exports.getAddressCoordinates = async (address) => {
   try {
     const response = await axios.get(
@@ -99,4 +100,45 @@ module.exports.getAutoCompleteSuggestions = async (input, lat, lng) => {
     console.error("Error fetching autocomplete suggestions:", error);
     throw error;
   }
+};
+
+function getDistanceInKm(lat1, lon1, lat2, lon2) {
+  const R = 6371; // Earth radius in km
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * Math.PI / 180) *
+    Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
+
+module.exports.getCaptainsInTheRadius = async (lat, lng, radiusInKm) => {
+  if (!radiusInKm) {
+    throw new Error("Radius is required");
+  }
+
+  // Get only captains with valid location
+  const captains = await captainModel.find({
+    "location.ltd": { $ne: null },
+    "location.lng": { $ne: null },
+  });
+
+  const nearbyCaptains = captains.filter((captain) => {
+    const distance = getDistanceInKm(
+      lat,
+      lng,
+      captain.location.ltd,
+      captain.location.lng
+    );
+
+    return distance <= radiusInKm;
+  });
+
+  return nearbyCaptains;
 };

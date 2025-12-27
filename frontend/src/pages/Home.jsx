@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useContext } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import axios from "axios";
@@ -8,6 +8,9 @@ import VehiclePanel from "../components/VehiclePanel";
 import ConfirmRide from "../components/ConfirmRide";
 import LookingForDriver from "../components/LookingForDriver";
 import WaitingForDriver from "../components/WaitingForDriver";
+import { useSocket } from "../context/SocketContext.jsx";
+import { useEffect } from "react";
+import { UserDataContext } from "../context/UserContext.jsx";
 
 const Home = () => {
   const [pickup, setPickup] = useState("");
@@ -30,10 +33,24 @@ const Home = () => {
   const [activeField, setActiveField] = useState(null);
   const [fare, getFare] = useState(null);
   const [vehicleType, setVehicleType] = useState(null);
+  const [ride, setRide] = useState(null);
 
   const submitHandler = (e) => {
     e.preventDefault();
   };
+
+  const { socket } = useSocket();
+  const { user } = useContext(UserDataContext);
+
+  useEffect(() => {
+    socket.emit("join", { userType: "user", userId: user._id });
+  }, [user]);
+
+  socket.on("ride-confirmed", (ride) => {
+    setVehicleFound(false);
+    setWaitingForDriver(true);
+    setRide(ride);
+  });
 
   const handleSearchFocus = (field) => {
     setPanelOpen(true);
@@ -297,6 +314,8 @@ const Home = () => {
             setPickup={setPickup}
             setDestination={setDestination}
             activeField={activeField}
+            pickup={pickup}
+            destination={destination}
           />
         </div>
       </div>
@@ -323,6 +342,7 @@ const Home = () => {
           destination={destination}
           fare={fare}
           vehicleType={vehicleType}
+          passenger={user}
         />
       </div>
       <div
@@ -334,6 +354,7 @@ const Home = () => {
           pickup={pickup}
           destination={destination}
           fare={fare}
+          createRide={createRide}
           vehicleType={vehicleType}
         />
       </div>
@@ -341,7 +362,12 @@ const Home = () => {
         ref={waitingForDriverRef}
         className="fixed w-full  z-10 bottom-0  bg-white px-3 py-6 pt-12"
       >
-        <WaitingForDriver waitingForDriver={setWaitingForDriver} />
+        <WaitingForDriver
+          waitingForDriver={setWaitingForDriver}
+          ride={ride}
+          setVehicleFound={setVehicleFound}
+          setWaitingForDriver={setWaitingForDriver}
+        />
       </div>
     </div>
   );

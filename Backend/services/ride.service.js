@@ -57,13 +57,13 @@ async function getFare(pickupLocation, dropLocation) {
 module.exports.getFare = getFare;
 
 function getOtp(num = 4) {
-    const otp = crypto.randomInt(Math.pow(10, num - 1), Math.pow(10, num)).toString();
-    return otp;
+  const otp = crypto
+    .randomInt(Math.pow(10, num - 1), Math.pow(10, num))
+    .toString();
+  return otp;
 }
 
-
 module.exports.getFare = getFare;
-
 
 module.exports.getOtp = getOtp;
 
@@ -83,7 +83,7 @@ module.exports.createRide = async ({
     throw new Error("Invalid vehicle type selected.");
   }
   const ride = await rideModel.create({
-    userId: user,
+    user,
     pickupLocation,
     dropLocation,
     fare: fares[vehicleType].fare,
@@ -93,3 +93,29 @@ module.exports.createRide = async ({
 
   return ride;
 };
+
+module.exports.confirmRide = async ({
+    rideId, captain
+}) => {
+    if (!rideId) {
+        throw new Error('Ride id is required');
+    }
+
+    await rideModel.findOneAndUpdate({
+        _id: rideId
+    }, {
+        status: 'accepted',
+        captain: captain._id
+    })
+
+    const ride = await rideModel.findOne({
+        _id: rideId
+    }).populate('user').populate('captain').select('+otp');
+
+    if (!ride) {
+        throw new Error('Ride not found');
+    }
+
+    return ride;
+
+}

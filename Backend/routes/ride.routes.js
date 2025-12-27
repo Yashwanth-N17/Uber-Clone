@@ -36,4 +36,11 @@ router.post(
   rideController.getFare
 );
 
+
+router.post("/confirm",
+  authMiddleware.authCaptain,
+  body("rideId").isMongoId().withMessage("Valid ride ID is required"),
+  rideController.confirmRide
+)
+
 module.exports = router;
