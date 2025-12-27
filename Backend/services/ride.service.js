@@ -24,7 +24,6 @@ const vehiclePricing = {
 };
 
 async function getFare(pickupLocation, dropLocation) {
-  console.log("Calculating fare for:", pickupLocation, dropLocation);
   if (!pickupLocation || !dropLocation) {
     throw new Error(
       "Pickup and Drop locations are required to calculate fare."

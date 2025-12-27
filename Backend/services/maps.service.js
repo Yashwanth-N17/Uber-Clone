@@ -74,7 +74,7 @@ module.exports.getAutoCompleteSuggestions = async (input, lat, lng) => {
 
   let url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
     input
-  )}&addressdetails=1&limit=10`;
+  )}&addressdetails=1&limit=2`;
 
   if (lat && lng) {
     const minLat = parseFloat(lat) - 1;
