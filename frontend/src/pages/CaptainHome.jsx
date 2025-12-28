@@ -8,6 +8,7 @@ import ConfirmRidePopUp from "../components/ConfirmRidePopUp";
 import { useSocket } from "../context/SocketContext.jsx";
 import { CaptainDataContext } from "../context/CaptainContext.jsx";
 import axios from "axios";
+import LiveTracking from "../components/LiveTracking.jsx";
 
 const CaptainHome = () => {
   const [ridePopupPanel, setRidePopupPanel] = useState(false);
@@ -43,13 +44,11 @@ const CaptainHome = () => {
     return () => clearInterval(locationInterval);
   }, [socket, captain]);
 
-
-
-    socket.on("new-ride", (data) => {
-      console.log("New ride received:", data);
-      setRide(data);
-      setRidePopupPanel(true);
-    });
+  socket.on("new-ride", (data) => {
+    console.log("New ride received:", data);
+    setRide(data);
+    setRidePopupPanel(true);
+  });
 
   async function confirmRide() {
     try {
@@ -105,7 +104,7 @@ const CaptainHome = () => {
 
   return (
     <div className="h-screen">
-      <div className="fixed p-6 top-0 flex items-center justify-between w-screen">
+      <div className="fixed p-6 top-0 flex items-center justify-between w-screen z-20">
         <img
           className="w-16"
           src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png"
@@ -119,11 +118,7 @@ const CaptainHome = () => {
         </Link>
       </div>
       <div className="h-3/5">
-        <img
-          className="h-full w-full object-cover"
-          src="https://miro.medium.com/v2/resize:fit:1400/0*gwMx05pqII5hbfmX.gif"
-          alt=""
-        />
+        <LiveTracking rideId={ride?._id} captainLocation={captain?.location} />
       </div>
       <div className="h-2/5 p-6">
         <CaptainDetails />
@@ -144,6 +139,7 @@ const CaptainHome = () => {
         className="fixed w-full h-screen z-10 bottom-0 translate-y-full bg-white px-3 py-10 pt-12"
       >
         <ConfirmRidePopUp
+          ride={ride}
           setConfirmRidePopupPanel={setConfirmRidePopupPanel}
           setRidePopupPanel={setRidePopupPanel}
         />

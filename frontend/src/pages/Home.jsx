@@ -11,8 +11,11 @@ import WaitingForDriver from "../components/WaitingForDriver";
 import { useSocket } from "../context/SocketContext.jsx";
 import { useEffect } from "react";
 import { UserDataContext } from "../context/UserContext.jsx";
+import { useNavigate } from "react-router-dom";
+import LiveTracking from "../components/LiveTracking.jsx";
 
 const Home = () => {
+  const navigate = useNavigate();
   const [pickup, setPickup] = useState("");
   const [destination, setDestination] = useState("");
   const [panelOpen, setPanelOpen] = useState(false);
@@ -34,6 +37,7 @@ const Home = () => {
   const [fare, getFare] = useState(null);
   const [vehicleType, setVehicleType] = useState(null);
   const [ride, setRide] = useState(null);
+  const [userLocation, setUserLocation] = useState(null);
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -42,15 +46,65 @@ const Home = () => {
   const { socket } = useSocket();
   const { user } = useContext(UserDataContext);
 
+  // Fetch user's browser location on component mount
   useEffect(() => {
-    socket.emit("join", { userType: "user", userId: user._id });
-  }, [user]);
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setUserLocation({
+            ltd: latitude,
+            lng: longitude,
+          });
+          console.log("User location:", latitude, longitude);
+        },
+        (error) => {
+          console.error("Error getting location:", error);
+        }
+      );
 
-  socket.on("ride-confirmed", (ride) => {
-    setVehicleFound(false);
-    setWaitingForDriver(true);
-    setRide(ride);
-  });
+      // Update location every 10 seconds
+      const locationInterval = setInterval(() => {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords;
+            setUserLocation({
+              ltd: latitude,
+              lng: longitude,
+            });
+          },
+          (error) => {
+            console.error("Error updating location:", error);
+          }
+        );
+      }, 10000);
+
+      return () => clearInterval(locationInterval);
+    }
+  }, []);
+
+  useEffect(() => {
+    console.log(user);
+    socket.emit("join", { userType: "user", userId: user._id });
+  }, [user, socket]);
+
+  useEffect(() => {
+    socket.on("ride-confirmed", (rideData) => {
+      setVehicleFound(false);
+      setWaitingForDriver(true);
+      setRide(rideData);
+    });
+
+    socket.on("ride-started", (rideData) => {
+      setWaitingForDriver(false);
+      navigate("/riding", { state: { ride: rideData } });
+    });
+
+    return () => {
+      socket.off("ride-confirmed");
+      socket.off("ride-started");
+    };
+  }, [socket, navigate]);
 
   const handleSearchFocus = (field) => {
     setPanelOpen(true);
@@ -149,7 +203,6 @@ const Home = () => {
         gsap.to(panelRef.current, {
           height: "70%",
           padding: 24,
-          // opacity:1
         });
         gsap.to(panelCloseRef.current, {
           opacity: 1,
@@ -158,7 +211,6 @@ const Home = () => {
         gsap.to(panelRef.current, {
           height: "0%",
           padding: 0,
-          // opacity:0
         });
         gsap.to(panelCloseRef.current, {
           opacity: 0,
@@ -231,19 +283,17 @@ const Home = () => {
   return (
     <div className="h-screen relative overflow-hidden">
       <img
-        className="w-16 absolute left-5 top-5"
+        className="w-16 absolute left-5 top-5 z-30"
         src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png"
         alt=""
       />
-      <div className="h-screen w-screen">
-        {/* image for temporary use  */}
-        <img
-          className="h-full w-full object-cover"
-          src="https://miro.medium.com/v2/resize:fit:1400/0*gwMx05pqII5hbfmX.gif"
-          alt=""
+      <div className="fixed top-0 left-0 w-full h-screen">
+        <LiveTracking
+          rideId={ride?._id}
+          captainLocation={userLocation || ride?.captain?.location}
         />
       </div>
-      <div className=" flex flex-col justify-end h-screen absolute top-0 w-full">
+      <div className="flex flex-col justify-end h-screen absolute top-0 w-full">
         <div className="h-[30%] p-6 bg-white relative">
           <h5
             ref={panelCloseRef}
