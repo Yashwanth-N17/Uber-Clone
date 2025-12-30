@@ -1,7 +1,25 @@
 import React, { useEffect, useRef, useState } from "react";
 import L from "leaflet";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
 import { useSocket } from "../context/SocketContext";
 import "leaflet/dist/leaflet.css";
+
+const googleLocationIconSvg = encodeURIComponent(
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 32">
+     <path d="M12 0C7 0 3 4 3 9c0 6.627 8.656 16.41 8.936 16.71a1 1 0 0 0 1.528 0C12.344 25.41 21 15.627 21 9c0-5-4-9-9-9zm0 13.5a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9z" fill="#1976D2"/>
+   </svg>`
+);
+
+const googleLocationIcon = new L.Icon({
+  iconUrl: `data:image/svg+xml;utf8,${googleLocationIconSvg}`,
+  iconRetinaUrl: `data:image/svg+xml;utf8,${googleLocationIconSvg}`,
+  iconSize: [36, 44],
+  iconAnchor: [18, 44],
+  popupAnchor: [0, -40],
+  shadowUrl: markerShadow,
+  shadowSize: [44, 44],
+  shadowAnchor: [16, 44],
+});
 
 const LiveTracking = ({ rideId, captainLocation }) => {
   const mapRef = useRef(null);
@@ -42,19 +60,14 @@ const LiveTracking = ({ rideId, captainLocation }) => {
     const { ltd, lng } = location;
     setCurrentLocation({ ltd, lng });
 
-    // Custom captain icon
-    const captainIcon = L.divIcon({
-      html: `<div style="background-color: #000; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-center: center; border: 3px solid yellow; font-weight: bold;">C</div>`,
-      iconSize: [40, 40],
-      className: "captain-marker",
-    });
-
     // Remove old marker and add new one
     if (captainMarkerRef.current) {
       mapInstanceRef.current.removeLayer(captainMarkerRef.current);
     }
 
-    captainMarkerRef.current = L.marker([ltd, lng], { icon: captainIcon })
+    captainMarkerRef.current = L.marker([ltd, lng], {
+      icon: googleLocationIcon,
+    })
       .addTo(mapInstanceRef.current)
       .bindPopup("Captain Location");
 

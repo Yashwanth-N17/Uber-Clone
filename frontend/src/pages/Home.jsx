@@ -38,6 +38,7 @@ const Home = () => {
   const [vehicleType, setVehicleType] = useState(null);
   const [ride, setRide] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
+  const locationPanelRef = useRef(null);
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -199,15 +200,24 @@ const Home = () => {
 
   useGSAP(
     function () {
+      if (
+        !panelRef.current ||
+        !panelCloseRef.current ||
+        !locationPanelRef.current
+      ) {
+        return;
+      }
       if (panelOpen) {
+        locationPanelRef.current.classList.add("pt-15");
         gsap.to(panelRef.current, {
-          height: "70%",
+          height: "68%",
           padding: 24,
         });
         gsap.to(panelCloseRef.current, {
           opacity: 1,
         });
       } else {
+        locationPanelRef.current.classList.remove("pt-15");
         gsap.to(panelRef.current, {
           height: "0%",
           padding: 0,
@@ -294,7 +304,7 @@ const Home = () => {
         />
       </div>
       <div className="flex flex-col justify-end h-screen absolute top-0 w-full">
-        <div className="h-[30%] p-6 bg-white relative">
+        <div className="h-[32%] p-6 bg-white relative" ref={locationPanelRef}>
           <h5
             ref={panelCloseRef}
             onClick={() => {

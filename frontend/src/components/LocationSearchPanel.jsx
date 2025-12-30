@@ -16,7 +16,7 @@ const LocationSearchPanel = ({
 
   return (
     <div>
-      {/* Display suggestions */}
+      
       {suggestions.map(function (elem, idx) {
         return (
           <div
