@@ -706,3 +706,22 @@ Returns fare estimates.
 ##### 400 Bad Request
 
 Missing query parameters or calculation error.
+
+## Socket.io Events
+
+### Captain Location Update
+
+**Event:** `captain-location-updated`
+
+**Description:** Emitted to the client when a captain's location changes.
+
+**Payload:**
+
+```json
+{
+  "location": {
+    "ltd": 28.7041,
+    "lng": 77.1025
+  }
+}
+```
